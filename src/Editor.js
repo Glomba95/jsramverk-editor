@@ -1,38 +1,33 @@
-import React from "react";
-import "trix";
-// import './Editor.css';
-import "trix/dist/trix.css";
+import React, { useRef } from 'react';
+import 'trix';
+import './Editor.css';
 import { TrixEditor } from "react-trix";
 
 
 export default function Editor() {
-    // const editor = useRef();
+    const editor = useRef(null);
     
     const handleEditorReady = () => {
         // this is a reference back to the editor if you want to
         // do editing programatically
         console.log("Editor ready");
-        // editor.insertString("editor is ready");
     }
     
-    const handleChange = (html, text) => {
-        // html is the new html content
-        // text is the new text content
-        console.log('handle change');
+    const textContentToConsole = () => {
+        console.log(editor.current.editor.element.textContent);
     }
 
     return (
         <>
+            <button type="button" onClick={textContentToConsole}>
+            Save
+            </button>
             <TrixEditor
                 className="trix-editor"
-                // ref={editor}
+                ref={editor}
                 autoFocus={true}
-                placeholder="editor's placeholder"
+                placeholder="Trix Editor"
                 value="initial content <strong>for the editor</strong>"
-                // uploadURL="https://domain.com/imgupload/receiving/post"
-                // uploadData={{ "key1": "value", "key2": "value" }}
-                // fileParamName="blob"
-                onChange={handleChange}
                 onEditorReady={handleEditorReady}
             />
         </>

@@ -29,6 +29,9 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### `npm run deploy`
+Deploys app on [student server](https://www.student.bth.se/~ebam18/editor), removes project files on server that no longer exists locally.
+
 ### `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can't go back!**
