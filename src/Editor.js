@@ -19,9 +19,7 @@ export default function Editor() {
 
     return (
         <>
-            <button type="button" onClick={textContentToConsole}>
-            Save
-            </button>
+            <h1 className="page-header-title">Editor</h1>
             <TrixEditor
                 className="trix-editor"
                 ref={editor}
@@ -30,6 +28,14 @@ export default function Editor() {
                 value="initial content <strong>for the editor</strong>"
                 onEditorReady={handleEditorReady}
             />
+            <div className="trix-save-button-container">
+                <button 
+                    className="trix-save-button" 
+                    type="button" 
+                    onClick={textContentToConsole}
+                >Save
+                </button>
+            </div>
         </>
     );
 }

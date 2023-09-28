@@ -1,10 +1,38 @@
-trix-editor {
+.trix-editor-container {
+  padding: 10px 60px 60px;
+}
+
+.trix-editor {
   border: 1px solid #bbb;
   border-radius: 3px;
   margin: 0;
   padding: 0.4em 0.6em;
   min-height: 5em;
   outline: none; }
+
+.trix-save-button-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.trix-save-button {
+  margin: 20px auto;
+  border-radius: 20px;
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.trix-save-button:hover {
+    font-size: 18px;
+    cursor: pointer;
+}
 
 trix-toolbar * {
   box-sizing: border-box; }
