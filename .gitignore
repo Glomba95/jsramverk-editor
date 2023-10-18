@@ -12,6 +12,8 @@
 /build
 
 # misc
+.public/alt_img
+.vscode/
 .dependencygraph/
 .DS_Store
 .env
@@ -19,7 +21,6 @@
 .env.development.local
 .env.test.local
 .env.production.local
-Editor copy.js
 
 npm-debug.log*
 yarn-debug.log*
