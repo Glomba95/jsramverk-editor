@@ -14,7 +14,7 @@ export default function CreateDocForm({ toggle, editorContent, selectedDoc, setS
         if (name !== "") {
             let content = "";
             
-            if (!selectedDoc && editorContent) {
+            if (!selectedDoc.name && editorContent !== "") {
                 content = `${editorContent}`;
             }
 
@@ -26,14 +26,12 @@ export default function CreateDocForm({ toggle, editorContent, selectedDoc, setS
             const newDoc = await docsModel.createDoc(doc);
             setSelectedDoc(newDoc);
             
-            // const select = document.querySelector('select');
-            // select.value = selectedDoc._id;
             setName("");
             toggle();
         }
     }
     
-    // Form to enter name of created document.
+    // Form to set name for new document.
     return(
         <div className="popup">
             <div className="popup-inner">

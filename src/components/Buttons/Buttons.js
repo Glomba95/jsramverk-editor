@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import DocsDropDown from "./DocsDropDown/DocsDropDown";
 import CreateDocForm from "../CreateDocForm/CreateDocForm";
@@ -30,6 +30,8 @@ export function DocButtons({ toggleForm, showForm, selectedDoc, setSelectedDoc, 
 };
 
 export function SaveButton({ toggleForm, selectedDoc, editorContent} ) {
+    const [buttonText, setButtonText] = useState('Save'); 
+
     const saveDoc = () => {
         if (!selectedDoc._id) {
             toggleForm();
@@ -41,6 +43,13 @@ export function SaveButton({ toggleForm, selectedDoc, editorContent} ) {
             }
             
             docsModel.updateDoc(docId, document);
+            
+            // Changes button text for 1s to confirm save
+            setButtonText('Saved!');
+            
+            setTimeout(() => {
+                setButtonText('Save');
+            }, 1000);
         }
     }
 
@@ -50,7 +59,7 @@ export function SaveButton({ toggleForm, selectedDoc, editorContent} ) {
                 className="trix-save-button" 
                 type="button" 
                 onClick={saveDoc}
-            >Save
+            >{buttonText}
             </button>
         </div>
     )
