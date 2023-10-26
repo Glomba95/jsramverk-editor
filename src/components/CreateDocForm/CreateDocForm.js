@@ -1,10 +1,10 @@
 import React, { useState }  from 'react';
-import docsModel            from '../models/docs.js';
+import docsModel            from '../../models/docs.js';
 
-import './../style/CreateDocForm.css';
+import './CreateDocForm.css';
 
 
-export default function CreateDocForm({ toggle, editorContent, setSelectedDoc }) {
+export default function CreateDocForm({ toggle, editorContent, selectedDoc, setSelectedDoc }) {
     const [name, setName] = useState("");
 
     // Saves new document and sets it as selectedDoc
@@ -12,7 +12,12 @@ export default function CreateDocForm({ toggle, editorContent, setSelectedDoc })
         e.preventDefault();
         
         if (name !== "") {
-            const content = editorContent ? `${editorContent}` : "";
+            let content = "";
+            
+            if (!selectedDoc && editorContent) {
+                content = `${editorContent}`;
+            }
+
             const doc = {
                 name: `${name}`,
                 content: `${content}`
@@ -20,6 +25,9 @@ export default function CreateDocForm({ toggle, editorContent, setSelectedDoc })
             
             const newDoc = await docsModel.createDoc(doc);
             setSelectedDoc(newDoc);
+            
+            // const select = document.querySelector('select');
+            // select.value = selectedDoc._id;
             setName("");
             toggle();
         }

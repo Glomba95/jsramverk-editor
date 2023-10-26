@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import docsModel from '../models/docs';
+import docsModel from '../../../models/docs';
 
 
 export default function DocsDropDown({ selectedDoc, setSelectedDoc, setEditorContent }) {
@@ -10,6 +10,7 @@ export default function DocsDropDown({ selectedDoc, setSelectedDoc, setEditorCon
         (async () => {
             const allDocs = await docsModel.getAllDocs();
             setDocs(allDocs);
+            
             let element = document.querySelector("trix-editor");
             let content = "";
             
@@ -19,50 +20,39 @@ export default function DocsDropDown({ selectedDoc, setSelectedDoc, setEditorCon
             element.value = "";
             element.editor.insertHTML(content);
             setEditorContent(content);
+            
         })();
     }, [selectedDoc]);
     
-    // Set editor content to stored content of selected document
+    // ─── Dropdown Options ────────────────────────────────
+    
+    const options = docs.map((doc, index) => {
+        return <option key={index} value={doc._id}>{doc.name}</option>
+    });
+    
+    options.unshift(
+        <option key={"-99"} value={0}>
+            Open document
+        </option>
+    );
+    
+    // OnChange: Set editor content to stored content of selected document
     // or none if no stored document is selected
-    const fetchDoc = (doc) => {
+    const handleChange = (id) => {
+        const doc = docs.find(d => d._id === id)
         if (doc) {
-            let element = document.querySelector("trix-editor");
-            element.value = "";
-            element.editor.insertHTML(doc.content);
-            
             setSelectedDoc(doc);  
         } else {
             setSelectedDoc({});
         }
     }
     
-    // ─── Dropdown Options ────────────────────────────────
-    
-    const docsList = docs.map((doc, index) => {
-        return <option 
-                    value={index}
-                    key={doc._id}
-                    onClick={() => fetchDoc(doc)}
-                >
-                    {doc.name}
-                </option>
-    });
-    
-    docsList.unshift(
-        <option 
-            value="-99" 
-            key="0" 
-            onClick={() => fetchDoc(0)}
-        >
-            Open document
-        </option>
-    );
     
     // ────────────────────────────────────────────────────
     
     return(
-        <select>
-            {docsList}
+        <select value={selectedDoc._id} onChange={e => handleChange(e.target.value)}>
+            {options}
         </select>
     );
 }
