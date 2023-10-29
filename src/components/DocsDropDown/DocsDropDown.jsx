@@ -20,8 +20,6 @@ export default function DocsDropDown({ selectedDoc, setSelectedDoc, setEditorCon
             element.value = "";
             element.editor.setSelectedRange([0, 0]);
             element.editor.insertHTML(content);
-            setEditorContent(content);
-            
         })();
     }, [selectedDoc]);
     
