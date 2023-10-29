@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import DocsDropDown from "./DocsDropDown/DocsDropDown";
+import DocsDropDown from "../DocsDropDown/DocsDropDown";
 import CreateDocForm from "../CreateDocForm/CreateDocForm";
 
 import docsModel from "../../models/docs";

@@ -42,7 +42,7 @@ export default function CreateDocForm({ toggle, editorContent, selectedDoc, setS
                         <input type="text" value={name} onChange={e => setName(e.target.value)} />
                     </label>
                     <button type="submit" >Create</button>
-                    <button type="button" onClick={() => toggle()}>Close</button>
+                    <button type="button" onClick={() => toggle()}>Cancel</button>
                 </form>
             </div>
         </div>
