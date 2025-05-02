@@ -15,6 +15,7 @@
     "react-scripts": "5.0.1",
     "react-trix": "^0.10.2",
     "sass": "^1.68.0",
+    "socket.io-client": "^4.7.2",
     "trix": "^2.0.6",
     "web-vitals": "^2.1.4"
   },

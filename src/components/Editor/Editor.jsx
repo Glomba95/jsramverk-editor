@@ -4,13 +4,13 @@ import { TrixEditor } from 'react-trix';
 
 import './Editor.css';
 
-export default function Editor({editorContent, setEditorContent}) {
+export default function Editor({ selectedDoc, handleChange }) {
     return (
         <TrixEditor
             className="trix-content"
             autoFocus={true}
-            value={editorContent}
-            onChange={(value) => setEditorContent(value)}
+            default={selectedDoc.content}
+            onChange={handleChange}
         />
     );
 }

@@ -1,7 +1,8 @@
 const docs = {
-    baseUrl: window.location.href.includes("localhost") ?
-        "http://localhost:1337" :
-        "https://jsramverk-editor-ebam18.azurewebsites.net",
+    // baseUrl: window.location.href.includes("localhost") ?
+    //     "http://localhost:1337" :
+    //     "https://jsramverk-editor-ebam18.azurewebsites.net",
+    baseUrl: "http://localhost:1337",
     getAllDocs: async function getAllDocs() {
         const response = await fetch(`${docs.baseUrl}/docs`);
         const result = await response.json();

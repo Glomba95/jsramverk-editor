@@ -5,8 +5,8 @@ import CreateDocForm from "../CreateDocForm/CreateDocForm";
 
 import docsModel from "../../models/docs";
 
-export function DocButtons({ toggleForm, showForm, selectedDoc, setSelectedDoc, editorContent, setEditorContent }) {
-    return(
+export function DocButtons({ toggleForm, showForm, selectedDoc, selectedDocId, setLoadedDoc }) {
+    return (
         <span className='doc-button-group trix-button-group'>
             <button
                 type="button"
@@ -14,23 +14,22 @@ export function DocButtons({ toggleForm, showForm, selectedDoc, setSelectedDoc, 
             >
                 Create new
             </button>
-            {showForm && <CreateDocForm 
+            {showForm && <CreateDocForm
                 toggle={toggleForm}
-                editorContent={editorContent}
                 selectedDoc={selectedDoc}
-                setSelectedDoc={setSelectedDoc}
+                setLoadedDoc={setLoadedDoc}
             />}
-            <DocsDropDown 
+            <DocsDropDown
                 selectedDoc={selectedDoc}
-                setSelectedDoc={setSelectedDoc}
-                setEditorContent={setEditorContent}
+                selectedDocId={selectedDocId}
+                setLoadedDoc={setLoadedDoc}
             />
         </span>
     );
 };
 
-export function SaveButton({ toggleForm, selectedDoc, editorContent} ) {
-    const [buttonText, setButtonText] = useState('Save'); 
+export function SaveButton({ toggleForm, selectedDoc }) {
+    const [buttonText, setButtonText] = useState('Save');
 
     const saveDoc = () => {
         if (!selectedDoc._id) {
@@ -39,25 +38,25 @@ export function SaveButton({ toggleForm, selectedDoc, editorContent} ) {
             const docId = selectedDoc._id;
             const document = {
                 name: selectedDoc.name,
-                content: editorContent
+                content: selectedDoc.content
             }
-            
+
             docsModel.updateDoc(docId, document);
-            
+
             // Changes button text for 1s to confirm save
             setButtonText('Saved!');
-            
+
             setTimeout(() => {
                 setButtonText('Save');
             }, 1000);
         }
     }
 
-    return(
+    return (
         <div className="trix-save-button-container">
-            <button 
-                className="trix-save-button" 
-                type="button" 
+            <button
+                className="trix-save-button"
+                type="button"
                 onClick={saveDoc}
             >{buttonText}
             </button>

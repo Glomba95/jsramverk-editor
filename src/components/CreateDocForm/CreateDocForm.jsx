@@ -1,38 +1,39 @@
-import React, { useState }  from 'react';
-import docsModel            from '../../models/docs.js';
+import React, { useState } from 'react';
+import docsModel from '../../models/docs.js';
 
 import './CreateDocForm.css';
 
 
-export default function CreateDocForm({ toggle, editorContent, selectedDoc, setSelectedDoc }) {
+export default function CreateDocForm({ toggle, selectedDoc, setLoadedDoc }) {
     const [name, setName] = useState("");
 
     // Saves new document and sets it as selectedDoc
     async function saveDoc(e) {
         e.preventDefault();
-        
+
         if (name !== "") {
             let content = "";
-            
-            if (!selectedDoc.name && editorContent !== "") {
-                content = `${editorContent}`;
+
+            if (!selectedDoc.name && selectedDoc.content !== "") {
+                content = `${selectedDoc.content}`;
             }
 
             const doc = {
                 name: `${name}`,
                 content: `${content}`
             }
-            
+
             const newDoc = await docsModel.createDoc(doc);
-            setSelectedDoc(newDoc);
-            
+
+            setLoadedDoc(newDoc);
+
             setName("");
             toggle();
         }
     }
-    
+
     // Form to set name for new document.
-    return(
+    return (
         <div className="popup">
             <div className="popup-inner">
                 <h2>Create new document</h2>

@@ -1,37 +1,107 @@
-import React, { useState } from 'react';
+import './App.css';
+import React, { useEffect, useState } from 'react';
+import { io } from "socket.io-client";
+
+import docsModel from './models/docs.js';
 
 import { Editor, DocButtons, SaveButton } from './components';
 
-import './App.css';
+var updateSelectedDocOnChange = true;
 
 function App() {
+    const [selectedDocId, setSelectedDocId] = useState("");
     const [selectedDoc, setSelectedDoc] = useState({});
-    const [editorContent, setEditorContent] = useState('');
     const [showForm, setShowForm] = useState(false);
-    
+    const [socket, setSocket] = useState(null);
+
+    async function setLoadedDoc(doc) {
+        if (doc) {
+            await setSelectedDoc(doc);
+            await setSelectedDocId(doc["_id"]);
+
+            if (socket) {
+                socket.disconnect();
+            }
+
+            const tmpSocket = io(docsModel.baseUrl);
+            setSocket(tmpSocket);
+
+            if (tmpSocket && doc["_id"]) {
+                console.log("setting up socket");
+                tmpSocket.emit("create", `${selectedDoc._id}`);
+
+                tmpSocket.on("doc", (data) => {
+                    console.log("client recieved: ", data.content);
+                    console.log("altereditorcontent, content, false");
+                    alterEditorContent(data.content, false);
+                });
+            }
+
+            alterEditorContent(doc.content, true);
+
+        } else {
+            await setSelectedDoc({});
+            await setSelectedDocId("");
+
+            alterEditorContent("", false);
+        }
+    }
+
+
+    // Används för att fylla editorn med innehåll både vid byte av dokument samt av socketen. 
+    // När den körs av socketen skall triggerChange vara false annars true
+    function alterEditorContent(content, triggerChange) {
+        let element = document.querySelector("trix-editor");
+
+        updateSelectedDocOnChange = triggerChange;
+        element.value = "";
+        element.editor.setSelectedRange([0, 0]);
+        // Följande är med två gånger eftersom handleChange triggas två gånger och skall olika.
+        updateSelectedDocOnChange = triggerChange;
+        element.editor.insertHTML(content);
+    }
+
+    function handleChange(html, text) {
+        console.log("handleChange: ", html, "\nupdateSelDocOnChange: ", updateSelectedDocOnChange);
+
+        // Variabeln förhindrar att vi triggar setCurrentDoc när en uppdatering av editorn sker från annat håll än oss själva. 
+        if (updateSelectedDocOnChange) {
+            const copy = Object.assign({}, selectedDoc);
+            copy.content = html;
+
+            setSelectedDoc(copy);
+
+            if (socket) {
+                console.log("client sends on update: ", selectedDoc.content);
+                socket.emit("doc", copy);
+            }
+        }
+
+        updateSelectedDocOnChange = true;
+
+    }
+
     // Toggle CreateDocForm
     function toggleForm() {
         setShowForm(!showForm);
     };
-    
+
     return (
         <>
-            <DocButtons 
+            <DocButtons
                 toggleForm={toggleForm}
                 showForm={showForm}
                 selectedDoc={selectedDoc}
-                setSelectedDoc={setSelectedDoc}
-                editorContent={editorContent}
-                setEditorContent={setEditorContent}
+                selectedDocId={selectedDocId}
+                setLoadedDoc={setLoadedDoc}
             />
-            <Editor 
-                editorContent={editorContent}
-                setEditorContent={setEditorContent}
+            <Editor
+                selectedDoc={selectedDoc}
+                handleChange={handleChange}
             />
-            <SaveButton 
+            <SaveButton
                 toggleForm={toggleForm}
                 selectedDoc={selectedDoc}
-                editorContent={editorContent}
             />
         </>
     );
