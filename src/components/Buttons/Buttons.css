@@ -1,0 +1,8 @@
+.trix-button-group {
+    display: inline;
+}
+
+button[type="button"].logout-button {
+    float: right;
+    background-color: red;
+}

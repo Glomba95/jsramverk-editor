@@ -5,35 +5,45 @@ import CreateDocForm from "../CreateDocForm/CreateDocForm";
 
 import docsModel from "../../models/docs";
 
-export function DocButtons({ toggleForm, showForm, selectedDoc, selectedDocId, setLoadedDoc }) {
+import './Buttons.css';
+
+export function DocButtons({ toggleCreateDocForm, showCreateDocForm, selectedDoc, setSelectedDoc, selectedDocId, setSelectedDocId, alterEditorContent, setLoadedDoc, loggedIn, setLoggedIn }) {
     return (
         <span className='doc-button-group trix-button-group'>
             <button
                 type="button"
-                onClick={toggleForm}
+                onClick={toggleCreateDocForm}
             >
                 Create new
             </button>
-            {showForm && <CreateDocForm
-                toggle={toggleForm}
+            {showCreateDocForm && <CreateDocForm
+                toggle={toggleCreateDocForm}
+                setSelectedDocId={setSelectedDocId}
                 selectedDoc={selectedDoc}
-                setLoadedDoc={setLoadedDoc}
+                setSelectedDoc={setSelectedDoc}
             />}
             <DocsDropDown
                 selectedDoc={selectedDoc}
+                setSelectedDoc={setSelectedDoc}
+                alterEditorContent={alterEditorContent}
                 selectedDocId={selectedDocId}
+                setSelectedDocId={setSelectedDocId}
                 setLoadedDoc={setLoadedDoc}
+                loggedIn={loggedIn}
             />
+            {loggedIn && <LogOutButton
+                setLoggedIn={setLoggedIn}
+            />}
         </span>
     );
 };
 
-export function SaveButton({ toggleForm, selectedDoc }) {
+export function SaveButton({ toggleCreateDocForm, selectedDoc }) {
     const [buttonText, setButtonText] = useState('Save');
 
     const saveDoc = () => {
         if (!selectedDoc._id) {
-            toggleForm();
+            toggleCreateDocForm();
         } else {
             const docId = selectedDoc._id;
             const document = {
@@ -61,5 +71,42 @@ export function SaveButton({ toggleForm, selectedDoc }) {
             >{buttonText}
             </button>
         </div>
+    )
+}
+
+function LogOutButton({ setLoggedIn }) {
+    const [buttonText, setButtonText] = useState('Log out');
+
+    const logOut = () => {
+        localStorage.removeItem("token");
+        setLoggedIn(false);
+        // if (!selectedDoc._id) {
+        //     toggleCreateDocForm();
+        // } else {
+        //     const docId = selectedDoc._id;
+        //     const document = {
+        //         name: selectedDoc.name,
+        //         content: selectedDoc.content
+        //     }
+
+        //     docsModel.updateDoc(docId, document);
+
+        // Changes button text for 1s to confirm logged out
+        setButtonText('Logged Out!');
+
+        setTimeout(() => {
+            // REVIEW Behövs detta med en useEffect som triggar AuthForm när loggedIn = false?
+            setButtonText('What now?');
+        }, 1000);
+    }
+
+    return (
+        <button
+            className="logout-button"
+            type="button"
+            onClick={logOut}
+        >{buttonText}
+        </button>
+
     )
 }

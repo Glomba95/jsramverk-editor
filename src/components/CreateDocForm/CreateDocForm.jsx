@@ -4,7 +4,7 @@ import docsModel from '../../models/docs.js';
 import './CreateDocForm.css';
 
 
-export default function CreateDocForm({ toggle, selectedDoc, setLoadedDoc }) {
+export default function CreateDocForm({ toggle, setSelectedDocId, selectedDoc, setSelectedDoc }) {
     const [name, setName] = useState("");
 
     // Saves new document and sets it as selectedDoc
@@ -24,8 +24,10 @@ export default function CreateDocForm({ toggle, selectedDoc, setLoadedDoc }) {
             }
 
             const newDoc = await docsModel.createDoc(doc);
-
-            setLoadedDoc(newDoc);
+            
+            // REVIEW ändra till setLoadedDoc (och importera setLoadedDoc) 
+            setSelectedDoc(newDoc);
+            setSelectedDocId(newDoc._id);
 
             setName("");
             toggle();

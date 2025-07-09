@@ -2,19 +2,21 @@ import React, { useState, useEffect } from 'react';
 import docsModel from '../../models/docs';
 
 
-export default function DocsDropDown({ selectedDoc, selectedDocId, setLoadedDoc }) {
+export default function DocsDropDown({ selectedDoc, setSelectedDoc, selectedDocId, setSelectedDocId, alterEditorContent, setLoadedDoc, loggedIn }) {
     const [docs, setDocs] = useState([]);
 
     // Update dropdown-options when selectedDoc is changed
     useEffect(() => {
-        (async () => {
-            console.log("getting docs");
-            const allDocs = await docsModel.getAllDocs();
-            console.log("doc: ", allDocs);
-            setDocs(allDocs);
-        })();
+        if (loggedIn) {
+            (async () => {
+                console.log("getting docs");
+                const allDocs = await docsModel.getAllDocs();
+                console.log("doc: ", allDocs);
+                setDocs(allDocs);
+            })();
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedDocId]);
+    }, [selectedDocId, loggedIn]);
 
 
     // ─── Dropdown Options ────────────────────────────────
@@ -45,7 +47,7 @@ export default function DocsDropDown({ selectedDoc, selectedDocId, setLoadedDoc 
 
     return (
         <select value={selectedDoc._id} onChange={e => handleChange(e.target.value)}>
-            {options}
+            {loggedIn && options}
         </select>
     );
 }

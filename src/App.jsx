@@ -4,15 +4,25 @@ import { io } from "socket.io-client";
 
 import docsModel from './models/docs.js';
 
-import { Editor, DocButtons, SaveButton } from './components';
+import { Editor, DocButtons, SaveButton, AuthForm } from './components';
 
 var updateSelectedDocOnChange = true;
 
 function App() {
+    const [loggedIn, setLoggedIn] = useState(false);
     const [selectedDocId, setSelectedDocId] = useState("");
     const [selectedDoc, setSelectedDoc] = useState({});
-    const [showForm, setShowForm] = useState(false);
+    const [showCreateDocForm, setShowCreateDocForm] = useState(false);
+    const [showAuthForm, setShowAuthForm] = useState("none"); // Options are "none", "login", "register"
     const [socket, setSocket] = useState(null);
+
+    useEffect(() => {
+        if (!loggedIn) {
+            // If not logged in, show auth form
+            console.log("Not logged in, showing auth form");
+            setShowAuthForm("login");
+        }
+    }, [loggedIn]);
 
     async function setLoadedDoc(doc) {
         if (doc) {
@@ -28,7 +38,7 @@ function App() {
 
             if (tmpSocket && doc["_id"]) {
                 console.log("setting up socket");
-                tmpSocket.emit("create", `${selectedDoc._id}`);
+                tmpSocket.emit("create", `${doc._id}`);
 
                 tmpSocket.on("doc", (data) => {
                     console.log("client recieved: ", data.content);
@@ -81,26 +91,37 @@ function App() {
 
     }
 
-    // Toggle CreateDocForm
-    function toggleForm() {
-        setShowForm(!showForm);
+
+    function toggleCreateDocForm() {
+        setShowCreateDocForm(!showCreateDocForm);
     };
+
 
     return (
         <>
+            <AuthForm
+                showAuthForm={showAuthForm}
+                setShowAuthForm={setShowAuthForm}
+                setLoggedIn={setLoggedIn}
+            />
             <DocButtons
-                toggleForm={toggleForm}
-                showForm={showForm}
+                toggleCreateDocForm={toggleCreateDocForm}
+                showCreateDocForm={showCreateDocForm}
                 selectedDoc={selectedDoc}
+                setSelectedDoc={setSelectedDoc}
                 selectedDocId={selectedDocId}
+                setSelectedDocId={setSelectedDocId}
+                alterEditorContent={alterEditorContent}
                 setLoadedDoc={setLoadedDoc}
+                loggedIn={loggedIn}
+                setLoggedIn={setLoggedIn}
             />
             <Editor
                 selectedDoc={selectedDoc}
                 handleChange={handleChange}
             />
             <SaveButton
-                toggleForm={toggleForm}
+                toggleCreateDocForm={toggleCreateDocForm}
                 selectedDoc={selectedDoc}
             />
         </>
