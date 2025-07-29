@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 
 import DocsDropDown from "../DocsDropDown/DocsDropDown";
+import ShareDocForm from "../ShareDocForm/ShareDocForm";
 import CreateDocForm from "../CreateDocForm/CreateDocForm";
 
 import docsModel from "../../models/docs";
 
 import './Buttons.css';
 
-export function DocButtons({ toggleCreateDocForm, showCreateDocForm, selectedDoc, setSelectedDoc, selectedDocId, setSelectedDocId, alterEditorContent, setLoadedDoc, loggedIn, setLoggedIn }) {
+export function DocButtons({ toggleCreateDocForm, showCreateDocForm, selectedDoc, setSelectedDoc, selectedDocId, setSelectedDocId, alterEditorContent, setLoadedDoc, loggedIn, setLoggedIn, showShareDocForm, toggleShareDocForm }) {
     return (
         <span className='doc-button-group trix-button-group'>
             <button
@@ -31,8 +32,19 @@ export function DocButtons({ toggleCreateDocForm, showCreateDocForm, selectedDoc
                 setLoadedDoc={setLoadedDoc}
                 loggedIn={loggedIn}
             />
+            {selectedDocId && <button
+                type="button"
+                onClick={toggleShareDocForm}
+            >
+                Share
+            </button>}
+            {showShareDocForm && <ShareDocForm
+                selectedDocId={selectedDocId}
+                toggleShareDocForm={toggleShareDocForm}
+            />}
             {loggedIn && <LogOutButton
                 setLoggedIn={setLoggedIn}
+                setLoadedDoc={setLoadedDoc}
             />}
         </span>
     );
@@ -74,30 +86,16 @@ export function SaveButton({ toggleCreateDocForm, selectedDoc }) {
     )
 }
 
-function LogOutButton({ setLoggedIn }) {
+
+function LogOutButton({ setLoggedIn, setLoadedDoc }) {
     const [buttonText, setButtonText] = useState('Log out');
 
     const logOut = () => {
         localStorage.removeItem("token");
-        setLoggedIn(false);
-        // if (!selectedDoc._id) {
-        //     toggleCreateDocForm();
-        // } else {
-        //     const docId = selectedDoc._id;
-        //     const document = {
-        //         name: selectedDoc.name,
-        //         content: selectedDoc.content
-        //     }
-
-        //     docsModel.updateDoc(docId, document);
-
-        // Changes button text for 1s to confirm logged out
+        localStorage.removeItem("activeUser");
         setButtonText('Logged Out!');
-
-        setTimeout(() => {
-            // REVIEW Behövs detta med en useEffect som triggar AuthForm när loggedIn = false?
-            setButtonText('What now?');
-        }, 1000);
+        setLoggedIn(false);
+        setLoadedDoc();
     }
 
     return (

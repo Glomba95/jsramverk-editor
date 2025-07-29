@@ -13,6 +13,7 @@ function App() {
     const [selectedDocId, setSelectedDocId] = useState("");
     const [selectedDoc, setSelectedDoc] = useState({});
     const [showCreateDocForm, setShowCreateDocForm] = useState(false);
+    const [showShareDocForm, setShowShareDocForm] = useState(false);
     const [showAuthForm, setShowAuthForm] = useState("none"); // Options are "none", "login", "register"
     const [socket, setSocket] = useState(null);
 
@@ -96,6 +97,10 @@ function App() {
         setShowCreateDocForm(!showCreateDocForm);
     };
 
+    function toggleShareDocForm() {
+        setShowShareDocForm(!showShareDocForm);
+    };
+
 
     return (
         <>
@@ -115,6 +120,8 @@ function App() {
                 setLoadedDoc={setLoadedDoc}
                 loggedIn={loggedIn}
                 setLoggedIn={setLoggedIn}
+                showShareDocForm={showShareDocForm}
+                toggleShareDocForm={toggleShareDocForm}
             />
             <Editor
                 selectedDoc={selectedDoc}

@@ -18,6 +18,7 @@ export default function LoginForm({ setShowAuthForm, setLoggedIn }) {
             const result = await authModel.loginUser(user);
 
             if (result.success) {
+                localStorage.setItem("activeUser", username);
                 setLoggedIn(true);
 
                 setUsername("");

@@ -2,7 +2,6 @@ const docs = {
     // baseUrl: window.location.href.includes("localhost") ?
     //     "http://localhost:1337" :
     //     "https://jsramverk-editor-ebam18.azurewebsites.net",
-    //REVIEW - set token as a docs property?
     baseUrl: "http://localhost:1337",
     getAllDocs: async function getAllDocs() {
         let token = localStorage.getItem('token');
@@ -39,6 +38,21 @@ const docs = {
             },
             method: 'PUT'
         });
+    },
+    shareDoc: async function shareDoc(id, username) {
+        let token = localStorage.getItem('token');
+        const response = await fetch(`${docs.baseUrl}/docs/share/${id}`, {
+            body: JSON.stringify({ username }),
+            headers: {
+                'content-type': 'application/json',
+                'x-access-token': token
+            },
+            method: 'PUT'
+        });
+
+        const result = await response.json();
+
+        return result;
     }
 };
 
