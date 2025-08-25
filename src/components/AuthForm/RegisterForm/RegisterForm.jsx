@@ -49,7 +49,7 @@ export default function RegisterForm({ setShowAuthForm, setLoggedIn }) {
                         Password:
                         <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                     </label>
-                    <button type="submit" >Register</button>
+                    <button type="submit">Register</button>
                 </form>
             </div>
         </div>

@@ -1,3 +1,12 @@
+ul {
+    margin-top: 0.6em;
+    margin-bottom: 1em;
+}
+
+ul li {
+    padding-bottom: 0.5em;
+}
+
 .popup {
 position: fixed;
 z-index: 1;
@@ -82,3 +91,12 @@ background-color: #bfbfbf;
 color: #ffffff;
 cursor: not-allowed;
 }
+
+.form-sub-header {
+    margin-bottom: 0;
+}
+
+.form-list-container {
+    padding-left: 1.5em;
+}
+

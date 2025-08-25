@@ -4,7 +4,7 @@ import DocsDropDown from "../DocsDropDown/DocsDropDown";
 import ShareDocForm from "../ShareDocForm/ShareDocForm";
 import CreateDocForm from "../CreateDocForm/CreateDocForm";
 
-import docsModel from "../../models/docs";
+import docsModel from "../../models/docs.js";
 
 import './Buttons.css';
 
@@ -39,6 +39,8 @@ export function DocButtons({ toggleCreateDocForm, showCreateDocForm, selectedDoc
                 Share
             </button>}
             {showShareDocForm && <ShareDocForm
+                selectedDoc={selectedDoc}
+                setSelectedDoc={setSelectedDoc}
                 selectedDocId={selectedDocId}
                 toggleShareDocForm={toggleShareDocForm}
             />}

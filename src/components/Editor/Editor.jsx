@@ -9,7 +9,7 @@ export default function Editor({ selectedDoc, handleChange }) {
         <TrixEditor
             className="trix-content"
             autoFocus={true}
-            default={selectedDoc.content}
+            default={selectedDoc?.content || ""}
             onChange={handleChange}
         />
     );

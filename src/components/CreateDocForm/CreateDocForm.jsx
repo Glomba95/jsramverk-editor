@@ -24,7 +24,7 @@ export default function CreateDocForm({ toggle, setSelectedDocId, selectedDoc, s
             }
 
             const newDoc = await docsModel.createDoc(doc);
-            
+
             // REVIEW ändra till setLoadedDoc (och importera setLoadedDoc) 
             setSelectedDoc(newDoc);
             setSelectedDocId(newDoc._id);

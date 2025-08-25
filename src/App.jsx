@@ -2,45 +2,54 @@ import './App.css';
 import React, { useEffect, useState } from 'react';
 import { io } from "socket.io-client";
 
-import docsModel from './models/docs.js';
+import utils from './models/utils.js';
 
 import { Editor, DocButtons, SaveButton, AuthForm } from './components';
 
+// Används för att förhindra evighetsloopar vid socketuppdatering.
 var updateSelectedDocOnChange = true;
 
 function App() {
-    const [loggedIn, setLoggedIn] = useState(false);
-    const [selectedDocId, setSelectedDocId] = useState("");
-    const [selectedDoc, setSelectedDoc] = useState({});
+    // doc och id separerade då doc uppdaterar content vid varje teckenförändring i editorn, medans id 
+    const [selectedDocId, setSelectedDocId] = useState(""); // Valt dokument, ändras när användaren byter till ett annat
+    const [selectedDoc, setSelectedDoc] = useState({}); // Dokumentobjektet, uppdaterar content kontinuerligt när det ändras i editorn
     const [showCreateDocForm, setShowCreateDocForm] = useState(false);
     const [showShareDocForm, setShowShareDocForm] = useState(false);
     const [showAuthForm, setShowAuthForm] = useState("none"); // Options are "none", "login", "register"
     const [socket, setSocket] = useState(null);
+    const [loggedIn, setLoggedIn] = useState(false);
 
+    // If not logged in, show auth form
     useEffect(() => {
         if (!loggedIn) {
-            // If not logged in, show auth form
             console.log("Not logged in, showing auth form");
             setShowAuthForm("login");
         }
     }, [loggedIn]);
 
+    // Laddar ett valt dokument och kopplar socket mot det.
+    // Med 'doc' param sätts det som aktivt dokument och visas i editorn, socket lyssnar efter uppdateringar
+    // Utan 'doc' param rensas state och editor
     async function setLoadedDoc(doc) {
         if (doc) {
             await setSelectedDoc(doc);
             await setSelectedDocId(doc["_id"]);
 
+            // Koppla ner ev tidigare socket innan ny skapas
             if (socket) {
                 socket.disconnect();
             }
 
-            const tmpSocket = io(docsModel.baseUrl);
+            // Skapa ny socket
+            const tmpSocket = io(utils.baseUrl);
             setSocket(tmpSocket);
 
+            // Koppla ny socket mot valt doc
             if (tmpSocket && doc["_id"]) {
                 console.log("setting up socket");
                 tmpSocket.emit("create", `${doc._id}`);
 
+                // Socket: Hantera inkommande dokumentuppdateringar från servern 
                 tmpSocket.on("doc", (data) => {
                     console.log("client recieved: ", data.content);
                     console.log("altereditorcontent, content, false");
@@ -48,6 +57,7 @@ function App() {
                 });
             }
 
+            // Fyll editorn med valt dokuments content
             alterEditorContent(doc.content, true);
 
         } else {
@@ -59,8 +69,13 @@ function App() {
     }
 
 
-    // Används för att fylla editorn med innehåll både vid byte av dokument samt av socketen. 
-    // När den körs av socketen skall triggerChange vara false annars true
+    /**
+     * Ändrar innehållet som visas i editorn.
+     * 
+     * @param content - Editorns innehåll (HTML-string)
+     * @param triggerChange - styr om editor-ändringen ska trigga socket-uppdateringar 
+     * (false när den körs av socketen)
+     */
     function alterEditorContent(content, triggerChange) {
         let element = document.querySelector("trix-editor");
 
@@ -72,26 +87,44 @@ function App() {
         element.editor.insertHTML(content);
     }
 
-    function handleChange(html, text) {
-        console.log("handleChange: ", html, "\nupdateSelDocOnChange: ", updateSelectedDocOnChange);
 
-        // Variabeln förhindrar att vi triggar setCurrentDoc när en uppdatering av editorn sker från annat håll än oss själva. 
+    // ───── Handle Change ─────────────────────────────────────────────────
+    /**
+    *?  Editorns callback, anropas vid varje förändring av dess content (tecken för tecken).  
+    * 
+    *  - Om uppdateringen kommer från den lokala användaren:
+    *   - Uppdaterar dokumentobjektet (selectedDoc) med contentinnehåll     
+    *   - Skickar uppdaterat content till servern via socket 
+    *
+    *  @param html - editorns nuvarande innehåll, inkl formatering i html 
+    *  @param text - editorns nuvarande innehåll, enbart texten
+    */
+    // ─────────────────────────────────────────────────────────────────────
+
+    function handleChange(html, text) {
+        // console.log("handleChange: ", html, "\nupdateSelDocOnChange: ", updateSelectedDocOnChange);
+
+        // Om ändringen gjordes av den egna användaren, annars ignorera.
         if (updateSelectedDocOnChange) {
+            // Skapa en kopia av det aktuella dokumentobjektet med uppdaterat content
             const copy = Object.assign({}, selectedDoc);
             copy.content = html;
 
+            // Ersätt nuvarande valt dokumentobjekt med det uppdaterade 
             setSelectedDoc(copy);
 
+            // Socket: Skicka uppdaterat content till servern  
             if (socket) {
                 console.log("client sends on update: ", selectedDoc.content);
                 socket.emit("doc", copy);
             }
         }
-
+        // Återställ kontrollvariabeln
         updateSelectedDocOnChange = true;
-
     }
 
+
+    // Togglefunktioner för formulär
 
     function toggleCreateDocForm() {
         setShowCreateDocForm(!showCreateDocForm);

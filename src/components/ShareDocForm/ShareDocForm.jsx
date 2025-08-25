@@ -5,7 +5,7 @@ import docsModel from '../../models/docs.js';
 import './ShareDocForm.css';
 
 
-export default function ShareDocForm({ selectedDocId, toggleShareDocForm }) {
+export default function ShareDocForm({ selectedDoc, setSelectedDoc, selectedDocId, toggleShareDocForm }) {
     const [addUsername, setAddUsername] = useState("");
 
     // Saves new document and sets it as selectedDoc
@@ -13,10 +13,9 @@ export default function ShareDocForm({ selectedDocId, toggleShareDocForm }) {
         e.preventDefault();
 
         if (addUsername !== "") {
+            const activeUsername = localStorage.getItem("activeUser");
 
-            const activeUser = localStorage.getItem("activeUser");
-
-            if (addUsername === activeUser) {
+            if (addUsername === activeUsername) {
                 alert("You cannot share a document with yourself.")
             } else {
                 const validUsername = await authModel.verifyUser(addUsername);
@@ -28,6 +27,13 @@ export default function ShareDocForm({ selectedDocId, toggleShareDocForm }) {
 
                     if (result.success) {
                         alert(result.message);
+
+                        // Uppdatera selectedDoc med tillagda användaren
+                        setSelectedDoc(prevDoc => ({
+                            ...prevDoc,
+                            sharedWith: [...prevDoc.sharedWith, addUsername]
+                        }));
+
                         setAddUsername("");
                         toggleShareDocForm();
                     } else {
@@ -38,11 +44,22 @@ export default function ShareDocForm({ selectedDocId, toggleShareDocForm }) {
         }
     }
 
-    // Form to set name for new document.
+    // Form to share document access and editing rights with other users.
     return (
         <div className="popup">
             <div className="popup-inner">
                 <h2>Share document access and editing rights</h2>
+
+                {selectedDoc?.sharedWith?.length > 0 && (
+                    <div className='form-list-container'>
+                        <h4 className='form-sub-header'>Already shared with:</h4>
+                        <ul>
+                            {selectedDoc.sharedWith.map((username, index) => (
+                                <li key={index}>{username}</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
                 <form onSubmit={shareDoc}>
                     <label>
                         Share document with:

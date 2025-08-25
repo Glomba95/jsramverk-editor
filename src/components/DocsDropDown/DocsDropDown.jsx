@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import docsModel from '../../models/docs';
+import docsModel from '../../models/docs.js';
 
 
-export default function DocsDropDown({ selectedDoc, setSelectedDoc, selectedDocId, setSelectedDocId, alterEditorContent, setLoadedDoc, loggedIn }) {
+export default function DocsDropDown({ selectedDoc, selectedDocId, setLoadedDoc, loggedIn }) {
     const [docs, setDocs] = useState([]);
 
-    // Update dropdown-options when selectedDoc is changed
+    // Update dropdown-options when selectedDoc or logged in user changes  
     useEffect(() => {
         if (loggedIn) {
             (async () => {
@@ -28,7 +28,7 @@ export default function DocsDropDown({ selectedDoc, setSelectedDoc, selectedDocI
     // Add default
     options.unshift(
         <option key={"-99"} value={0}>
-            Open document
+            New document
         </option>
     );
 

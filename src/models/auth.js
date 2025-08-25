@@ -1,70 +1,72 @@
+import utils from "./utils.js";
+
 const auth = {
-    // baseUrl: window.location.href.includes("localhost") ?
-    //     "http://localhost:1337" :
-    //     "https://jsramverk-editor-ebam18.azurewebsites.net",
-    baseUrl: "http://localhost:1337",
     loginUser: async function loginUser(user) {
-        const response = await fetch(`${auth.baseUrl}/auth/login`, {
-            body: JSON.stringify(user),
-            headers: {
-                'content-type': 'application/json'
-            },
-            method: 'POST'
-        });
-        const result = await response.json();
-
-        if (!response.ok) {
-            console.log("authmodel: !response.ok");
-            return {
-                success: false,
-                message: result.errorMessage
+        const query = `
+            mutation LoginUser($user: UserInput!) {
+                loginUser(user: $user) {
+                    success
+                    token
+                    errorType
+                    message
+                }
             }
-        }
-        if (result.token) {
-            localStorage.setItem('token', result.token);
+        `;
 
+        const result = await utils.useFetch(query, { user });
+        const data = result.loginUser;
+
+        if (data.token) {
+            localStorage.setItem('token', data.token);
             return {
-                success: true,
+                success: true
             };
         }
+
+        return {
+            success: false,
+            message: data.message
+        };
+
     },
     registerUser: async function registerUser(user) {
-        const response = await fetch(`${auth.baseUrl}/auth/register`, {
-            body: JSON.stringify(user),
-            headers: {
-                'content-type': 'application/json'
-            },
-            method: 'POST'
-        });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            return {
-                success: false,
-                message: result.errorMessage
+        const query = `
+            mutation RegisterUser($user: UserInput!) {
+                registerUser(user: $user) {
+                    success
+                    errorType
+                    message
+                }
             }
+        `;
+
+        const result = await utils.useFetch(query, { user });
+        const data = result.registerUser;
+
+        if (data.success) {
+            console.log("User registred successfully.");
+            // Automatically log in after registration
+            return await auth.loginUser(user);
         }
 
-        // Automatically log in after registration
-        const loginUserRes = await auth.loginUser(user);
-
-        return loginUserRes;
+        return data;
     },
     verifyUser: async function verifyUser(username) {
         // Used when sharing doc rights with other users to verify entered username is a registred user.
-        const response = await fetch(`${auth.baseUrl}/auth/verifyuser`, {
-            body: JSON.stringify({ username }),
-            headers: {
-                'content-type': 'application/json'
-            },
-            method: 'POST'
-        });
+        const query = `
+            query VerifyUser($username: String!) {
+                verifyUser(username: $username)
+            }
+        `;
 
-        const result = await response.json();
+        const result = await utils.useFetch(query, { username });
 
-        // returns user if username is registred else false
-        return result;
+        if (result.success === false) {
+            return false;
+        }
+
+        // Returnerar true eller false
+        return result.verifyUser;
     }
 };
 

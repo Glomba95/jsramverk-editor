@@ -53,7 +53,7 @@ export default function LoginForm({ setShowAuthForm, setLoggedIn }) {
                         Password:
                         <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
                     </label>
-                    <button type="submit" >Login</button>
+                    <button type="submit">Login</button>
                 </form>
             </div>
         </div>
